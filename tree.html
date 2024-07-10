@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Aurelien Montmejat</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/treeflex/dist/css/treeflex.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <style>
+        div.content-center {
+            height: 75%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        nav,
+        .navbar {
+            position: absolute;
+            top: 0;
+        }
+
+        body,
+        html {
+            font-family: 'Fira Code', monospace;
+            height: 100%;
+            margin: 0;
+        }
+
+        .tf-nc.card {
+            border: var(--bs-card-border-width) solid var(--bs-card-border-color);
+        }
+
+        .tf-tree .tf-nc:before,
+        .tf-tree .tf-nc:after {
+            border-left-color: #d2d2d2;
+        }
+
+        .tf-tree li li:before {
+            border-left-color: #d2d2d2;
+        }
+
+        body[data-bs-theme="dark"] .tf-tree .tf-nc:before,
+        .tf-tree .tf-nc:after {
+            border-left-color: #424649;
+        }
+
+        body[data-bs-theme="dark"] .tf-tree li li:before {
+            border-left-color: #424649;
+        }
+    </style>
+</head>
+
+<body data-bs-theme="dark">
+    <div class="container content-center">
+        <nav class="navbar navbar-expand-lg m-4">
+            <div class="container-fluid">
+                <div class="navbar-collapse justify-content-md-center">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="home.html">home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="tree.html">tech-tree</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="resume.html">resume</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="contact.html">contact</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <p class="mt-5 text-secondary" style="width: 22rem; text-align: center;">I summerize what I'm working on here. More to come
+            soon.</p>
+
+        <div class="tf-tree content-center">
+            <ul>
+                <li>
+                    <span class="tf-nc card">Image processing</span>
+                    <ul>
+                        <li>
+                            <span class="tf-nc card" style="width: 18rem;">
+                                <div class="card-body">
+                                    <h5 class="card-title">MOSSE</h5>
+                                    <p class="card-text">Object tracking.</p>
+                                    <hr class="m-2">
+                                    <i class="bi bi-github"></i>
+                                    <a href="https://github.com/montmejat/mosse" class="card-link">Code</a>
+                                    <i class="bi bi-info-circle-fill"></i>
+                                    <a href="pages/mosse.html" class="card-link">Details</a>
+                                </div>
+                            </span>
+                        </li>
+                    </ul>
+                </li>
+                <li><span class="tf-nc card">Deep Learning</span></li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
