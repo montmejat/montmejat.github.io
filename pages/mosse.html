@@ -23,7 +23,6 @@
 
         div.container {
             max-width: 1000px;
-            margin-bottom: 400px;
         }
 
         nav,
@@ -71,130 +70,117 @@
     </div>
 
     <div class="container">
-        <div>
-            <h1>The MOSSE algorithm</h1>
+        <h1>The MOSSE algorithm</h1>
 
-            <h3>Correlation filters</h3>
-            <p>
-                Filter-based object trackers locate an object by training a filter to model its appearance using
-                multiple example images. The filter scans (or correlates) over a search window to determine the object's
-                position in the image.
-            </p>
+        <h3>Correlation filters</h3>
+        <p>
+            Filter-based object trackers locate an object by training a filter to model its appearance using
+            multiple example images. The filter scans (or correlates) over a search window to determine the object's
+            position in the image.
+        </p>
 
-            <div class="text-center m-3">
-                <img src="mosse/correlation-filter.png">
-            </div>
+        <div class="text-center m-3">
+            <img src="mosse/correlation-filter.png">
+        </div>
 
-            <p>
-                This can get quite slow however, especially for real-time applications.
-            </p>
+        <p>
+            This can get quite slow however, especially for real-time applications.
+        </p>
 
-            <h3>The fast fourier transform trick</h3>
-            <p>
-                One strategy that has been quite successful to speed up things is the use of the Fourier transform. This
-                trick involes computing the correlation in the frequency domain instead of the spatial domain. Instead
-                of sliding the filter across each position of the image, we can get our correlation result in one go
-                by multiplying it all in the frequency domain
-                (<a href="https://en.wikipedia.org/wiki/Convolution_theorem">convolution theorem</a>).
-            </p>
+        <h3>The fast fourier transform trick</h3>
+        <p>
+            One strategy that has been quite successful to speed up things is the use of the Fourier transform. This
+            trick involes computing the correlation in the frequency domain instead of the spatial domain. Instead
+            of sliding the filter across each position of the image, we can get our correlation result in one go
+            by multiplying it all in the frequency domain
+            (<a href="https://en.wikipedia.org/wiki/Convolution_theorem">convolution theorem</a>).
+        </p>
 
-            <div class="text-center m-3">
-                <img src="mosse/fourier-filter.png">
-            </div>
+        <div class="text-center m-3">
+            <img src="mosse/fourier-filter.png">
+        </div>
 
-            <p>Definitively dark magic!</p>
+        <p>Definitively dark magic!</p>
 
-            <h3>Let's build it</h3>
-            <h4>The preprocessing step</h4>
+        <h3>Let's build it</h3>
+        <h4>The preprocessing step</h4>
 
-            <p>
-                At each step of the algorithm the images are preprocessed to improve the correlation results. In MOSSE,
-                the authors use the preprocessing steps described in
-                <a href="https://ieeexplore.ieee.org/document/5206701">Average of Synthetic Exact Filters</a>.
-            </p>
+        <p>
+            At each step of the algorithm the images are preprocessed to improve the correlation results. In MOSSE,
+            the authors use the preprocessing steps described in
+            <a href="https://ieeexplore.ieee.org/document/5206701">Average of Synthetic Exact Filters</a>.
+        </p>
 
-            <ol>
-                <li>
-                    Log transformation: reduces the effect of shadows and intense lightning.
-                    <pre class="m-2"><code class="language-python">def log_transform(image: np.ndarray) -> np.ndarray:
+        <ol>
+            <li>
+                Log transformation: reduces the effect of shadows and intense lightning.
+                <pre class="m-2"><code class="language-python">def log_transform(image: np.ndarray) -> np.ndarray:
     return np.log(image + 1)</code></pre>
-                </li>
-                <li>
-                    Normalization to zero mean and squared sum of one: creates more consistent values.
-                    <pre class="m-2"><code class="language-python">def normalize(image: np.ndarray) -> np.ndarray:
+            </li>
+            <li>
+                Normalization to zero mean and squared sum of one: creates more consistent values.
+                <pre class="m-2"><code class="language-python">def normalize(image: np.ndarray) -> np.ndarray:
     return (image - image.mean()) / (image.std() + 1e-5)</code></pre>
-                </li>
-                <li>
-                    Use of a cosine window: reduces the frequencies at the edges of the image
-                    <pre class="m-2"><code class="language-python">def hanning_window(image: np.ndarray) -> np.ndarray:
+            </li>
+            <li>
+                Use of a cosine window: reduces the frequencies at the edges of the image
+                <pre class="m-2"><code class="language-python">def hanning_window(image: np.ndarray) -> np.ndarray:
     height, width = image.shape
     mask_col, mask_row = np.meshgrid(np.hanning(width), np.hanning(height))
     window = mask_col * mask_row
     return image * window</code></pre>
-                </li>
-            </ol>
+            </li>
+        </ol>
 
-            <h4>The initialization step</h4>
+        <h4>The initialization step</h4>
 
-            <p>
-                The first step is to initialize the filter. The relationship between the filter, the template and the
-                image in the Fourier domain is defined as:
-                $$ G = F \odot H^{*} \hspace{1cm} \text{and} \hspace{1cm} H^{*} = \dfrac{G}{F} $$
-            </p>
+        <p>
+            The first step is to initialize the filter. The relationship between the filter, the template and the
+            image in the Fourier domain is defined as:
+            $$ G = F \odot H^{*} \hspace{1cm} \text{and} \hspace{1cm} H^{*} = \dfrac{G}{F} $$
+        </p>
 
-            <p>
-                However, as this filter overfits the first frame, it can fail to generalize to the next frames. To
-                overcome this, MOSSE applies multiple random transformations and averages the filters to make it more
-                robust.
-            </p>
+        <p>
+            However, as this filter overfits the first frame, it can fail to generalize to the next frames. To
+            overcome this, MOSSE applies multiple random transformations and averages the filters to make it more
+            robust.
+        </p>
+    </div>
 
-            <h4>The update step</h4>
+    <div class="text-center m-3">
+        <img src="mosse/filter-initialization-dark.png">
+    </div>
 
-            <p>
-                When updating the filter with new frames, MOSSE finds a filter that optimzes the following objective
-                function:
+    <div class="container" style="margin-bottom: 400px;">
+        <h4>The update step</h4>
 
-                $$ \min_{H^{*}} \sum_{i} \left| F_{i} \odot H^{*} - G_{i} \right|^{2} $$
+        <p>
+            When updating the filter with new frames, MOSSE finds a filter that optimzes the following objective
+            function:
 
-                This optimization problem can be solved using the following equation:
+            $$ \min_{H^{*}} \sum_{i} \left| F_{i} \odot H^{*} - G_{i} \right|^{2} $$
 
-                $$ H^{*} = \dfrac{\sum_{i} F_{i} \odot G_{i}^{*}}{\sum_{i} F_{i} \odot F_{i}^{*}} $$
+            This optimization problem can be solved using the following equation:
 
-                MOSSE uses a running average with a learning rate *η* to update the filter:
+            $$ H^{*} = \dfrac{\sum_{i} F_{i} \odot G_{i}^{*}}{\sum_{i} F_{i} \odot F_{i}^{*}} $$
 
-                $$ H^{*} = \dfrac{A_{i}}{B_{i}} $$
+            MOSSE uses a running average with a learning rate η to update the filter:
 
-                $$ A_{i} = \eta G_{i} \odot F_{i}^{*} + (1 - \eta) A_{i - 1} \hspace{1cm} and \hspace{1cm} B_i{i} = \eta
-                F_{i} \odot F_{i}^{*} + (1 - \eta) B_{i -1} $$
+            $$ H^{*} = \dfrac{A_{i}}{B_{i}} $$
 
-                More details are available in the original paper. This can be implemented as follows:
-            </p>
+            $$ A_{i} = \eta G_{i} \odot F_{i}^{*} + (1 - \eta) A_{i - 1} \hspace{1cm} and \hspace{1cm} B_i{i} = \eta
+            F_{i} \odot F_{i}^{*} + (1 - \eta) B_{i -1} $$
 
-            <pre class="m-2"><code class="language-python">f = new_frame[bbox.top : bbox.bottom, bbox.left : bbox.right]
-f = preprocess(f)
-G = H * F
+            All of the details are available in
+            <a href="https://www.cs.colostate.edu/~draper/papers/bolme_cvpr10.pdf">the original paper.</a>
+        </p>
+    </div>
 
-g = normalize_range(np.fft.ifft2(G)) # Normalize between 0 and 1
-
-max_pos = np.where(g == g.max())
-bbox.x = max_pos[1].item() + bbox.left
-bbox.y = max_pos[0].item() + bbox.top
-
-f = frame[bbox.top : bbox.bottom, bbox.left : bbox.right]
-F = np.fft.fft2(preprocess(f))
-G = H * F
-
-A = (learning_rate * (G * np.conj(F)) + (1 - learning_rate) * A)
-B = (learning_rate * (F * np.conj(F)) + (1 - learning_rate) * B)
-H = A / B
-</code></pre>
-        </div>
-
-        <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-            crossorigin="anonymous"></script>
-        <script>hljs.highlightAll();</script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+    <script>hljs.highlightAll();</script>
 </body>
 
 </html>
