@@ -37,13 +37,18 @@
             border: var(--bs-card-border-width) solid var(--bs-card-border-color);
         }
 
-        .tf-tree .tf-nc:before,
+        .tf-tree li {
+            margin: -1px 0 0 0;
+        }
+
+        body[data-bs-theme="light"] .tf-tree .tf-nc:before,
         .tf-tree .tf-nc:after {
             border-left-color: #d2d2d2;
         }
 
-        .tf-tree li li:before {
-            border-left-color: #d2d2d2;
+        body[data-bs-theme="light"] .tf-tree li li:before {
+
+            border-top-color: #d2d2d2;
         }
 
         body[data-bs-theme="dark"] .tf-tree .tf-nc:before,
@@ -52,12 +57,46 @@
         }
 
         body[data-bs-theme="dark"] .tf-tree li li:before {
-            border-left-color: #424649;
+            border-top-color: #424649;
+        }
+
+        .bd-mode-toggle .dropdown-menu .active .bi {
+            display: block !important;
         }
     </style>
 </head>
 
 <body data-bs-theme="dark">
+    <script src="javascript/color-modes.js"></script>
+
+    <div class="dropdown position-fixed bottom-0 end-0 mb-3 me-3 bd-mode-toggle">
+        <button class="btn btn-bd-primary py-2 dropdown-toggle d-flex align-items-center" id="bd-theme" type="button"
+            aria-expanded="false" data-bs-toggle="dropdown" aria-label="Toggle theme (auto)">
+            <i class="bi my-1 bi-circle-half"></i>
+            <span class="visually-hidden" id="bd-theme-text">Toggle theme</span>
+        </button>
+
+        <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="bd-theme-text">
+            <li>
+                <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light"
+                    aria-pressed="false">
+                    <i class="bi me-2 opacity-75 bi-sun-fill"></i>
+                    Light
+                    <i class="bi ms-auto d-none bi-check2"></i>
+                </button>
+            </li>
+
+            <li>
+                <button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="dark"
+                    aria-pressed="true">
+                    <i class="bi me-2 opacity-75 bi-moon-stars-fill"></i>
+                    Dark
+                    <i class="bi ms-auto d-none bi-check2"></i>
+                </button>
+            </li>
+        </ul>
+    </div>
+
     <div class="container content-center">
         <nav class="navbar navbar-expand-lg m-4">
             <div class="container-fluid">
@@ -80,7 +119,8 @@
             </div>
         </nav>
 
-        <p class="mt-5 text-secondary" style="width: 22rem; text-align: center;">I summerize what I'm working on here. More to come
+        <p class="mt-5 text-secondary" style="width: 22rem; text-align: center;">I summerize what I'm working on here.
+            More to come
             soon.</p>
 
         <div class="tf-tree content-center">
