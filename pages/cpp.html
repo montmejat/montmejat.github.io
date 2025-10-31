@@ -23,6 +23,7 @@
 
         div.container {
             max-width: 1000px;
+            padding-bottom: 3rem !important;
         }
 
         nav,
@@ -122,9 +123,9 @@
         </p>
 
         <pre class="m-2">
-            <code class="language-cpp">#include <xmp><iostream>
-#include <string>
-#include <utility></xmp> // for std::move
+            <code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;utility&gt; // for std::move
 
 struct S {
     std::string data;
@@ -148,6 +149,51 @@ int main() {
     S b(std::move(s));  // uses move constructor — 's' turned into rvalue
     S c("temp");        // uses move constructor — temporary is an rvalue
 }</code>
+        </pre>
+
+        <h4>Perfect forwarding</h4>
+        <p>
+            Additionaly, C++11 also introduced <code>std::forward</code>, which is a special cast used in template
+            functions to serve how an argument was originally passed — whether it was an lvalue or an rvalue.
+        </p>
+
+        <ul>
+            <li>If the argument was an lvalue, <code>std::forward</code> returns it as an lvalue.</li>
+            <li>If it was an rvalue, <code>std::forward</code> returns it as an rvalue.</li>
+        </ul>
+
+        <p>
+            <code>std::forward</code> preserves the value category (lvalue vs rvalue) of an argument when passing it 
+            to another function. This enables <b>perfect forwarding</b> — efficiently forwarding arguments without 
+            unnecessary copies. It's what makes <code>std::make_unique</code>, <code>std::make_shared</code>, and 
+            <code>emplace_back</code> possible.
+        </p>
+
+        <pre class="m-2">
+            <code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;utility&gt;
+
+struct S {
+    std::string data;
+
+    S(const std::string& d) : data(d) { std::cout << "copy constructor\n"; }
+    S(std::string&& d) : data(std::move(d)) { std::cout << "move constructor\n"; }
+};
+
+template&lt;typename T, typename Arg&gt;
+T make_object(Arg&& arg) {
+    return T(std::forward&lt;Arg&gt;(arg)); // preserves lvalue/rvalue
+}
+
+int main() {
+    std::string s = "hello";
+
+    S a = make_object&lt;S&gt;(s);               // copy constructor
+    S b = make_object&lt;S&gt;(std::move(s));    // move constructor
+    S c = make_object&lt;S&gt;("temp");          // move constructor
+}</code>
+        </pre>
     </div>
 
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
