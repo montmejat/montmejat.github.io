@@ -101,6 +101,8 @@
                 <ul>
                     <li><a href="#move-semantics">Move semantics</a></li>
                     <li><a href="#perfect-forwarding">Perfect forwarding</a></li>
+                    <li><a href="#smart-pointers">Smart pointers</a></li>
+                    <li><a href="#lambda-expresions">Lambda expressions</a></li>
                 </ul>
             </div>
             <div class="timeline-box" style="opacity: 0.5;">
@@ -231,8 +233,8 @@ int main() {
 
         <h4 id="smart-pointers">Smart pointers</h4>
         <p>
-            Before C++11, manual memory management with raw pointers was error-prone, leading to memory leaks and 
-            dangling pointers. Smart pointers automatically manage object lifetime using RAII (Resource Acquisition 
+            Before C++11, manual memory management with raw pointers was error-prone, leading to memory leaks and
+            dangling pointers. Smart pointers automatically manage object lifetime using RAII (Resource Acquisition
             Is Initialization).
         </p>
 
@@ -294,7 +296,7 @@ void bad_example() {
 }</code></pre>
 
         <p>
-            Each node keeps the other alive because they both have a reference count > 0. 
+            Each node keeps the other alive because they both have a reference count > 0.
             Neither can be destroyed, causing a memory leak.
         </p>
 
@@ -326,9 +328,41 @@ void good_example() {
 }</code></pre>
 
         <p>
-            <code>weak_ptr</code> observes but doesn't own. It must be converted to <code>shared_ptr</code> 
+            <code>weak_ptr</code> observes but doesn't own. It must be converted to <code>shared_ptr</code>
             via <code>.lock()</code> before use (returns empty <code>shared_ptr</code> if object was destroyed).
         </p>
+
+        <h4 id="lambda-expressions">Lambda expressions</h4>
+
+        <p>
+            Before C++11, passing simple functions to algorithms required defining separate function objects or
+            functions. Lambdas allow you to define anonymous functions inline, making code more concise and readable.
+        </p>
+
+        <p><b>Basic syntax:</b> <code>[capture](parameters) -> return_type { body }</code></p>
+
+        <pre class="mb-3"><code class="language-cpp">auto add = [](int a, int b) { return a + b; };
+std::cout << add(3, 4) << "\n"; // 7
+
+int x = 10;
+auto add_x = [x](int y) { return x + y; };
+std::cout << add_x(5) << "\n"; // 15
+
+int counter = 0;
+auto increment = [&counter]() { counter++; };
+increment();
+increment();
+std::cout << counter << "\n"; // 2</code></pre>
+
+        <p><b>Capture modes:</b></p>
+        <ul>
+            <li><code>[]</code> - capture nothing</li>
+            <li><code>[x]</code> - capture x by value</li>
+            <li><code>[&x]</code> - capture x by reference</li>
+            <li><code>[=]</code> - capture all by value</li>
+            <li><code>[&]</code> - capture all by reference</li>
+        </ul>
+
     </div>
 
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
