@@ -41,11 +41,28 @@
 
         h2,
         h3 {
-            margin-top: 2rem;
+            margin-top: 3rem;
         }
 
         h4 {
-            margin-top: 1rem;
+            margin-top: 2rem;
+        }
+
+        .timeline {
+            display: flex;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .timeline-box {
+            border: 1px solid #6c757d;
+            padding: 1rem;
+        }
+
+        .timeline-box ul {
+            margin: 0;
+            padding-left: 1.0rem;
+            font-size: 0.9rem;
         }
     </style>
 </head>
@@ -78,9 +95,32 @@
         <h1>A brief history of C++</h1>
         <p>C++XX: version of C++ released in 20XX</p>
 
-        <h2>C++11: The big update that brought modern C++</h2>
+        <div class="timeline">
+            <div class="timeline-box">
+                <b>C++11</b>
+                <ul>
+                    <li><a href="#move-semantics">Move semantics</a></li>
+                    <li><a href="#perfect-forwarding">Perfect forwarding</a></li>
+                </ul>
+            </div>
+            <div class="timeline-box" style="opacity: 0.5;">
+                <b>C++14</b>
+            </div>
+            <div class="timeline-box" style="opacity: 0.5;">
+                <b>C++17</b>
+            </div>
+            <div class="timeline-box" style="opacity: 0.5;">
+                <b>C++20</b>
+            </div>
+            <div class="timeline-box" style="opacity: 0.5;">
+                <b>C++23</b>
+            </div>
+        </div>
 
-        <h4>Move semantics</h4>
+        <h2 id="cpp11">C++11</h2>
+        <p><i>The big update that brought modern C++.</i></p>
+
+        <h4 id="move-semantics">Move semantics</h4>
         <p>
             Before C++11, when you passed or returned objects by value, copies were always made.
             For large objects (like vectors, strings, or complex data structures), this could be very expensive.
@@ -88,12 +128,10 @@
 
         <p>Example:</p>
 
-        <pre class="m-2">
-            <code class="language-cpp">std::vector<int> make_vector() {
+        <pre class="mb-3"><code class="language-cpp">std::vector<int> make_vector() {
     std::vector<int> v(1000000, 42);
     return v; // expensive copy before C++11
-}</code>
-        </pre>
+}</code></pre>
 
         <p>Even though the temporary <code>v</code> was about to be destroyed, C++ had to copy it into the
             return value.
@@ -122,8 +160,7 @@
             meaning that it casts its argument to an rvalue. One common use case is in move constructors, for example:
         </p>
 
-        <pre class="m-2">
-            <code class="language-cpp">#include &lt;iostream&gt;
+        <pre class="mb-3"><code class="language-cpp">#include &lt;iostream&gt;
 #include &lt;string&gt;
 #include &lt;utility&gt; // for std::move
 
@@ -148,10 +185,9 @@ int main() {
     S a(s);             // uses copy constructor — 's' is an lvalue
     S b(std::move(s));  // uses move constructor — 's' turned into rvalue
     S c("temp");        // uses move constructor — temporary is an rvalue
-}</code>
-        </pre>
+}</code></pre>
 
-        <h4>Perfect forwarding</h4>
+        <h4 id="perfect-forwarding">Perfect forwarding</h4>
         <p>
             Additionaly, C++11 also introduced <code>std::forward</code>, which is a special cast used in template
             functions to serve how an argument was originally passed — whether it was an lvalue or an rvalue.
@@ -163,14 +199,13 @@ int main() {
         </ul>
 
         <p>
-            <code>std::forward</code> preserves the value category (lvalue vs rvalue) of an argument when passing it 
-            to another function. This enables <b>perfect forwarding</b> — efficiently forwarding arguments without 
-            unnecessary copies. It's what makes <code>std::make_unique</code>, <code>std::make_shared</code>, and 
+            <code>std::forward</code> preserves the value category (lvalue vs rvalue) of an argument when passing it
+            to another function. This enables <b>perfect forwarding</b> — efficiently forwarding arguments without
+            unnecessary copies. It's what makes <code>std::make_unique</code>, <code>std::make_shared</code>, and
             <code>emplace_back</code> possible.
         </p>
 
-        <pre class="m-2">
-            <code class="language-cpp">#include &lt;iostream&gt;
+        <pre class="mb-3"><code class="language-cpp">#include &lt;iostream&gt;
 #include &lt;string&gt;
 #include &lt;utility&gt;
 
@@ -192,8 +227,108 @@ int main() {
     S a = make_object&lt;S&gt;(s);               // copy constructor
     S b = make_object&lt;S&gt;(std::move(s));    // move constructor
     S c = make_object&lt;S&gt;("temp");          // move constructor
-}</code>
-        </pre>
+}</code></pre>
+
+        <h4 id="smart-pointers">Smart pointers</h4>
+        <p>
+            Before C++11, manual memory management with raw pointers was error-prone, leading to memory leaks and 
+            dangling pointers. Smart pointers automatically manage object lifetime using RAII (Resource Acquisition 
+            Is Initialization).
+        </p>
+
+        <p><b>std::unique_ptr</b> - Exclusive ownership:</p>
+
+        <pre class="mb-3"><code class="language-cpp">#include &lt;memory&gt;
+#include &lt;iostream&gt;
+
+struct Widget {
+    Widget() { std::cout << "Widget created\n"; }
+    ~Widget() { std::cout << "Widget destroyed\n"; }
+};
+
+void example() {
+    std::unique_ptr&lt;Widget&gt; ptr = std::make_unique&lt;Widget&gt;();
+    // Widget automatically destroyed when ptr goes out of scope
+    
+    // Cannot copy (deleted copy constructor)
+    // auto ptr2 = ptr; // ERROR!
+    
+    // Can move ownership
+    auto ptr2 = std::move(ptr); // ptr is now nullptr
+}</code></pre>
+
+        <p><b>std::shared_ptr</b> - Shared ownership with reference counting:</p>
+
+        <pre class="mb-3"><code class="language-cpp">void example() {
+    std::shared_ptr&lt;Widget&gt; ptr1 = std::make_shared&lt;Widget&gt;();
+    std::cout << "Count: " << ptr1.use_count() << "\n"; // 1
+    
+    {
+        std::shared_ptr&lt;Widget&gt; ptr2 = ptr1; // copy allowed
+        std::cout << "Count: " << ptr1.use_count() << "\n"; // 2
+    } // ptr2 destroyed, count decreases
+    
+    std::cout << "Count: " << ptr1.use_count() << "\n"; // 1
+} // Widget destroyed when last shared_ptr dies</code></pre>
+
+        <p><b>The circular reference problem:</b></p>
+
+        <pre class="mb-3"><code class="language-cpp">struct Node {
+    std::shared_ptr&lt;Node&gt; next;
+    std::shared_ptr&lt;Node&gt; prev; // both are shared_ptr - BAD!
+    ~Node() { std::cout << "Node destroyed\n"; }
+};
+
+void bad_example() {
+    auto node1 = std::make_shared&lt;Node&gt;(); // node1 refcount = 1
+    auto node2 = std::make_shared&lt;Node&gt;(); // node2 refcount = 1
+    
+    node1->next = node2; // node2 refcount = 2 (node1 owns it too)
+    node2->prev = node1; // node1 refcount = 2 (node2 owns it too)
+    
+    // When function exits:
+    // - local node1 destroyed → node1 refcount = 1 (still owned by node2->prev)
+    // - local node2 destroyed → node2 refcount = 1 (still owned by node1->next)
+    // Both nodes keep each other alive forever! Memory leak!
+    // "Node destroyed" is NEVER printed
+}</code></pre>
+
+        <p>
+            Each node keeps the other alive because they both have a reference count > 0. 
+            Neither can be destroyed, causing a memory leak.
+        </p>
+
+        <p><b>std::weak_ptr</b> - Solution: Non-owning reference that breaks cycles:</p>
+
+        <pre class="mb-3"><code class="language-cpp">struct Node {
+    std::shared_ptr&lt;Node&gt; next; // ownership: forward direction
+    std::weak_ptr&lt;Node&gt; prev;   // non-owning: backward reference
+    ~Node() { std::cout << "Node destroyed\n"; }
+};
+
+void good_example() {
+    auto node1 = std::make_shared&lt;Node&gt;(); // node1 refcount = 1
+    auto node2 = std::make_shared&lt;Node&gt;(); // node2 refcount = 1
+    
+    node1->next = node2; // node2 refcount = 2
+    node2->prev = node1; // node1 refcount still 1 (weak_ptr doesn't count!)
+    
+    // To use weak_ptr, must convert to shared_ptr first
+    if (auto shared = node2->prev.lock()) {
+        // shared is a valid shared_ptr to node1
+        std::cout << "node1 is still alive\n";
+    }
+    
+    // When function exits:
+    // - local node1 destroyed → node1 refcount = 0 → node1 deleted
+    // - local node2 destroyed → node2 refcount = 1 → decrements to 0 → node2 deleted
+    // "Node destroyed" printed twice - no leak!
+}</code></pre>
+
+        <p>
+            <code>weak_ptr</code> observes but doesn't own. It must be converted to <code>shared_ptr</code> 
+            via <code>.lock()</code> before use (returns empty <code>shared_ptr</code> if object was destroyed).
+        </p>
     </div>
 
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
