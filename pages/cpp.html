@@ -100,9 +100,11 @@
                 <b>C++11</b>
                 <ul>
                     <li><a href="#move-semantics">Move semantics</a></li>
-                    <li><a href="#perfect-forwarding">Perfect forwarding</a></li>
                     <li><a href="#smart-pointers">Smart pointers</a></li>
-                    <li><a href="#lambda-expresions">Lambda expressions</a></li>
+                    <li><a href="#lambda-expressions">Lambda expressions</a></li>
+                    <li><a href="#enum-class">Enum class</a></li>
+                    <li><a href="#modern-features">Other features</a></li>
+                    <li><a href="#threading">Threading</a></li>
                 </ul>
             </div>
             <div class="timeline-box" style="opacity: 0.5;">
@@ -189,10 +191,10 @@ int main() {
     S c("temp");        // uses move constructor — temporary is an rvalue
 }</code></pre>
 
-        <h4 id="perfect-forwarding">Perfect forwarding</h4>
+        <h5>Perfect forwarding</h5>
         <p>
-            Additionaly, C++11 also introduced <code>std::forward</code>, which is a special cast used in template
-            functions to serve how an argument was originally passed — whether it was an lvalue or an rvalue.
+            Additionally, C++11 introduced <code>std::forward</code>, which is a special cast used in template
+            functions to preserve how an argument was originally passed — whether it was an lvalue or an rvalue.
         </p>
 
         <ul>
@@ -362,6 +364,98 @@ std::cout << counter << "\n"; // 2</code></pre>
             <li><code>[=]</code> - capture all by value</li>
             <li><code>[&]</code> - capture all by reference</li>
         </ul>
+
+        <h4 id="enum-class">Strongly typed enums (enum class)</h4>
+        <p>
+            Before C++11, traditional enums had several problems: they implicitly converted to integers, 
+            polluted the surrounding namespace, and allowed comparisons between different enum types.
+        </p>
+
+        <p>
+            C++11 introduced <code>enum class</code> (also called scoped enums) to solve these issues:
+        </p>
+
+        <pre class="mb-3"><code class="language-cpp">enum Color { Red, Green, Blue }; // old-style enums
+enum Fruit { Apple, Orange, Banana };
+
+enum class Color { Red, Green, Blue }; // introduction of enum class
+enum class Fruit { Apple, Orange, Banana };
+
+int main() {
+    Color c_old = Red;           // Red pollutes the enclosing namespace
+    int x_old = c_old;               // implicit conversion to int — dangerous!
+    
+    Color c_new = Color::Red;    // must use scope resolution
+    int x_new = static_cast&lt;int&gt;(c_new); // explicit cast required
+    
+    if (Red == Apple) {}      // compiles! different enum types compared
+    if (Color::Red == Fruit::Apple) {} // ERROR: can't compare different enum types
+}</code></pre>
+
+        <p><b>Specifying underlying type:</b></p>
+
+        <pre class="mb-3"><code class="language-cpp">enum class Status : uint8_t {  // uses 1 byte instead of default int
+    OK = 0,
+    Warning = 1,
+    Error = 2
+};
+
+// Old enums can also specify underlying type in C++11
+enum OldStyle : uint16_t { A, B, C };</code></pre>
+
+        <h4 id="modern-features">Other C++11 features</h4>
+
+        <h5 id="auto">Auto</h5>
+        <p>Compiler automatically deduces the type:</p>
+
+        <pre class="mb-3"><code class="language-cpp">std::vector&lt;int&gt; vec = {1, 2, 3};
+auto it = vec.begin();  // instead of std::vector&lt;int&gt;::iterator
+auto lambda = [](int x) { return x * 2; };</code></pre>
+
+        <h5 id="range-based-loops">Range-based for loops</h5>
+        <p>Clean syntax for iterating over containers:</p>
+
+        <pre class="mb-3"><code class="language-cpp">std::vector&lt;int&gt; vec = {1, 2, 3, 4, 5};
+
+for (auto x : vec) {}        // by value (copy)
+for (auto& x : vec) {}       // by reference (can modify)
+for (const auto& x : vec) {} // by const reference (efficient, read-only)</code></pre>
+
+        <h5 id="nullptr">nullptr</h5>
+        <p>Type-safe null pointer that fixes ambiguity issues with <code>NULL</code> (represented as a 0 integer):</p>
+
+        <pre class="mb-3"><code class="language-cpp">void func(int x) {}
+void func(char* ptr) {}
+
+func(NULL);    // calls int version - wrong!
+func(nullptr); // calls pointer version - correct!
+
+int* p = nullptr; // clear and type-safe</code></pre>
+
+        <h5 id="constexpr">constexpr</h5>
+        <p>Evaluate at compile time:</p>
+
+        <pre class="mb-3"><code class="language-cpp">constexpr int square(int x) { return x * x; }
+
+constexpr int size = square(5); // evaluated at compile time
+int arr[size];                  // size must be compile-time constant</code></pre>
+
+        <h5 id="variadic-templates">Variadic templates</h5>
+        <p>Templates that accept any number of arguments:</p>
+
+        <pre class="mb-3"><code class="language-cpp">template&lt;typename T, typename... Args&gt;
+void print(T first, Args... rest) {
+    std::cout << first << " ";
+    print(rest...);
+}
+
+print(1, 2.5, "hello", 'c'); // prints: 1 2.5 hello c</code></pre>
+
+        <h4 id="threading">Threading</h4>
+        <p>
+            <i>TODO: Add content about C++11 threading library (std::thread, std::mutex, std::lock_guard, 
+            std::condition_variable, std::atomic, etc.)</i>
+        </p>
 
     </div>
 
