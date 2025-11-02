@@ -107,8 +107,11 @@
                     <li><a href="#threading">Threading</a></li>
                 </ul>
             </div>
-            <div class="timeline-box" style="opacity: 0.5;">
+            <div class="timeline-box">
                 <b>C++14</b>
+                <ul>
+                    <li><a href="#cpp14">Improvements</a></li>
+                </ul>
             </div>
             <div class="timeline-box" style="opacity: 0.5;">
                 <b>C++17</b>
@@ -440,6 +443,15 @@ int* p = nullptr; // clear and type-safe</code></pre>
 constexpr int size = square(5); // evaluated at compile time
 int arr[size];                  // size must be compile-time constant</code></pre>
 
+        <h5 id="trailing-return">Trailing return types</h5>
+        <p>Return type after parameters using <code>-></code>; useful when it depends on arguments.</p>
+
+        <pre class="mb-3"><code class="language-cpp">template<class T, class U>
+auto add(T a, U b) -> decltype(a + b) { return a + b; }
+
+auto lam = [](int x) -> long { return x; }; // trailing return on lambda
+</code></pre>
+
         <h5 id="variadic-templates">Variadic templates</h5>
         <p>Templates that accept any number of arguments:</p>
 
@@ -457,6 +469,48 @@ print(1, 2.5, "hello", 'c'); // prints: 1 2.5 hello c</code></pre>
             std::condition_variable, std::atomic, etc.)</i>
         </p>
 
+        <h2 id="cpp14">C++14</h2>
+        <p><i>Small new features and improvements.</i></p>
+        
+        <h4 id="generic-lambdas">Generic lambdas (auto parameters)</h4>
+        <p>Lambda parameters can use <code>auto</code> to be type-generic.</p>
+        
+        <pre class="mb-3"><code class="language-cpp">auto add = [](auto a, auto b) { return a + b; };
+static_assert(add(1, 2) == 3);
+static_assert(add(1.5, 2.5) == 4.0);
+</code></pre>
+
+        <h4 id="auto-return">Auto return type deduction</h4>
+        <p>Functions can deduce return type with <code>auto</code> (no trailing return needed).</p>
+
+        <pre class="mb-3"><code class="language-cpp">auto sum(int a, int b) { return a + b; }   // returns int
+auto make_vec(int n) { return std::vector<int>(n); } // returns std::vector<int>
+</code></pre>
+
+        <h4 id="make-unique">std::make_unique</h4>
+        <p>Factory for <code>std::unique_ptr</code>; safe and concise object creation.</p>
+
+        <pre class="mb-3"><code class="language-cpp">struct W { W(int, std::string) {} };
+auto p = std::make_unique<W>(42, "ok");
+</code></pre>
+
+        <h4 id="constexpr-14">Relaxed constexpr</h4>
+        <p><code>constexpr</code> functions may use local variables, loops, and branches.</p>
+
+        <pre class="mb-3"><code class="language-cpp">constexpr int fact(int n) {
+    int r = 1;
+    for (int i = 2; i <= n; ++i) r *= i;
+    return r;
+}
+static_assert(fact(5) == 120);
+</code></pre>
+
+        <h4 id="binary-literals">Binary literals and digit separators</h4>
+        <p>Binary integer literals and apostrophe digit separators improve readability.</p>
+
+        <pre class="mb-3"><code class="language-cpp">int flags = 0b1010'1100;     // 172
+auto million = 1'000'000;    // 1000000
+</code></pre>
     </div>
 
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
