@@ -66,6 +66,30 @@
             padding-left: 1.0rem;
             font-size: 0.9rem;
         }
+
+        #scrollTopBtn {
+            display: none;
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            z-index: 1000;
+            font-size: 1.5rem;
+            background-color: #284c83;
+            color: white;
+            border: none;
+            outline: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            transition: opacity 0.3s ease, transform 0.2s ease;
+        }
+
+        #scrollTopBtn:hover {
+            background-color: #0b5ed7;
+            transform: scale(1.1);
+        }
     </style>
 </head>
 
@@ -1013,6 +1037,24 @@ for (auto [num, letter] : std::views::zip(a, b))
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
     <script>hljs.highlightAll();</script>
+
+    <button id="scrollTopBtn" title="Go to top">↑</button>
+
+    <script>
+        const scrollTopBtn = document.getElementById("scrollTopBtn");
+
+        window.addEventListener("scroll", () => {
+            if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+                scrollTopBtn.style.display = "block";
+            } else {
+                scrollTopBtn.style.display = "none";
+            }
+        });
+
+        scrollTopBtn.addEventListener("click", () => {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+    </script>
 </body>
 
 </html>
