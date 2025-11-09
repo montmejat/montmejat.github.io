@@ -52,6 +52,8 @@
             display: flex;
             gap: 2rem;
             margin: 2rem 0;
+            justify-content: center;
+            flex-wrap: wrap;
         }
 
         .timeline-box {
@@ -91,39 +93,73 @@
         </nav>
     </div>
 
-    <div class="container">
-        <h1>A brief history of C++</h1>
+    <div class="container" style="padding-bottom: 0em !important">
+        <h1>C++ features history</h1>
         <p>C++XX: version of C++ released in 20XX</p>
+    </div>
 
-        <div class="timeline">
-            <div class="timeline-box">
-                <b>C++11</b>
-                <ul>
-                    <li><a href="#move-semantics">Move semantics</a></li>
-                    <li><a href="#smart-pointers">Smart pointers</a></li>
-                    <li><a href="#lambda-expressions">Lambda expressions</a></li>
-                    <li><a href="#enum-class">Enum class</a></li>
-                    <li><a href="#modern-features">Other features</a></li>
-                    <li><a href="#threading">Threading</a></li>
-                </ul>
-            </div>
-            <div class="timeline-box">
-                <b>C++14</b>
-                <ul>
-                    <li><a href="#cpp14">Improvements</a></li>
-                </ul>
-            </div>
-            <div class="timeline-box" style="opacity: 0.5;">
-                <b>C++17</b>
-            </div>
-            <div class="timeline-box" style="opacity: 0.5;">
-                <b>C++20</b>
-            </div>
-            <div class="timeline-box" style="opacity: 0.5;">
-                <b>C++23</b>
-            </div>
+    <div class="timeline">
+        <div class="timeline-box">
+            <b>C++11</b>
+            <ul>
+                <li><a href="#move-semantics">Move semantics</a></li>
+                <li><a href="#smart-pointers">Smart pointers</a></li>
+                <li><a href="#lambda-expressions">Lambda expressions</a></li>
+                <li><a href="#enum-class">Enum class</a></li>
+                <li><a href="#modern-features">Other features</a></li>
+                <li><a href="#threading">Threading</a></li>
+            </ul>
+        </div>
+        <div class="timeline-box">
+            <b>C++14</b>
+            <ul>
+                <li><a href="#generic-lambdas">Generic lambdas</a></li>
+                <li><a href="#auto-return">Auto returns</a></li>
+                <li><a href="#make-unique">Make unique factory</a></li>
+                <li><a href="#constexpr-14">Relaxed constexpr</a></li>
+                <li><a href="#binary-literals">Readable number syntax</a></li>
+            </ul>
+        </div>
+        <div class="timeline-box">
+            <b>C++17</b>
+            <ul>
+                <li><a href="#structured-bindings">Structured bindings</a></li>
+                <li><a href="#if-init">If/switch initializers</a></li>
+                <li><a href="#optional-variant-any">optional/variant/any</a></li>
+                <li><a href="#filesystem">Filesystem</a></li>
+                <li><a href="#fold-expressions">Fold expressions</a></li>
+                <li><a href="#inline-vars">Inline variables</a></li>
+                <li><a href="#constexpr17">constexpr improvements</a></li>
+            </ul>
+        </div>
+        <div class="timeline-box">
+            <b>C++20</b>
+            <ul>
+                <li><a href="#concepts">Concepts</a></li>
+                <li><a href="#ranges">Ranges</a></li>
+                <li><a href="#coroutines">Coroutines</a></li>
+                <li><a href="#modules">Modules</a></li>
+                <li><a href="#constexpr20">constexpr</a></li>
+                <li><a href="#spaceship">Spaceship operator</a></li>
+                <li><a href="#calendar">Calendar &amp; time zones</a></li>
+            </ul>
         </div>
 
+        <div class="timeline-box">
+            <b>C++23</b>
+            <ul>
+                <li><a href="#expected">std::expected</a></li>
+                <li><a href="#print">std::print</a></li>
+                <li><a href="#deducing-this">Deducing this</a></li>
+                <li><a href="#range-updates">Ranges updates</a></li>
+                <li><a href="#constexpr23">constexpr updates</a></li>
+                <li><a href="#mdspan">std::mdspan</a></li>
+                <li><a href="#multirange">Multi-range for loops</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="container">
         <h2 id="cpp11">C++11</h2>
         <p><i>The big update that brought modern C++.</i></p>
 
@@ -370,7 +406,7 @@ std::cout << counter << "\n"; // 2</code></pre>
 
         <h4 id="enum-class">Strongly typed enums (enum class)</h4>
         <p>
-            Before C++11, traditional enums had several problems: they implicitly converted to integers, 
+            Before C++11, traditional enums had several problems: they implicitly converted to integers,
             polluted the surrounding namespace, and allowed comparisons between different enum types.
         </p>
 
@@ -465,16 +501,16 @@ print(1, 2.5, "hello", 'c'); // prints: 1 2.5 hello c</code></pre>
 
         <h4 id="threading">Threading</h4>
         <p>
-            <i>TODO: Add content about C++11 threading library (std::thread, std::mutex, std::lock_guard, 
-            std::condition_variable, std::atomic, etc.)</i>
+            <i>TODO: Add content about C++11 threading library (std::thread, std::mutex, std::lock_guard,
+                std::condition_variable, std::atomic, etc.)</i>
         </p>
 
         <h2 id="cpp14">C++14</h2>
         <p><i>Small new features and improvements.</i></p>
-        
+
         <h4 id="generic-lambdas">Generic lambdas (auto parameters)</h4>
         <p>Lambda parameters can use <code>auto</code> to be type-generic.</p>
-        
+
         <pre class="mb-3"><code class="language-cpp">auto add = [](auto a, auto b) { return a + b; };
 static_assert(add(1, 2) == 3);
 static_assert(add(1.5, 2.5) == 4.0);
@@ -511,6 +547,465 @@ static_assert(fact(5) == 120);
         <pre class="mb-3"><code class="language-cpp">int flags = 0b1010'1100;     // 172
 auto million = 1'000'000;    // 1000000
 </code></pre>
+
+        <h2 id="cpp17">C++17</h2>
+        <p><i>A practical release focusing on cleaner code and performance improvements.</i></p>
+
+        <h4 id="structured-bindings">Structured bindings</h4>
+        <p>
+            Structured bindings allow unpacking tuples, pairs, and structs directly into named variables.
+        </p>
+
+        <pre class="mb-3"><code class="language-cpp">#include &lt;tuple&gt;
+#include &lt;string&gt;
+#include &lt;iostream&gt;
+
+std::tuple&lt;int, std::string&gt; get_person() {
+    return {25, "Alice"};
+}
+
+int main() {
+    auto [age, name] = get_person(); // unpack directly
+    std::cout << name << " is " << age << " years old\n";
+}</code></pre>
+
+        <p>They can also be used with <code>std::map</code> or <code>std::unordered_map</code> iteration:</p>
+
+        <pre class="mb-3"><code class="language-cpp">std::map&lt;std::string, int&gt; scores = {{"Alice", 90}, {"Bob", 80}};
+for (auto [name, score] : scores)
+    std::cout << name << ": " << score << "\n";
+</code></pre>
+
+        <h4 id="if-init">If / switch with initializers</h4>
+        <p>
+            You can now initialize a variable directly inside an <code>if</code> or <code>switch</code> statement,
+            limiting its scope to that statement.
+        </p>
+
+        <pre class="mb-3"><code class="language-cpp">if (auto it = scores.find("Bob"); it != scores.end()) {
+    std::cout << "Bob's score: " << it->second << "\n";
+} else {
+    std::cout << "Bob not found\n";
+}</code></pre>
+
+        <h4 id="optional-variant-any">std::optional, std::variant, std::any</h4>
+        <p>
+            New standard utilities to represent optional or flexible data.
+        </p>
+
+        <h5>std::optional</h5>
+        <p>Represents an optional value that may or may not exist.</p>
+
+        <pre class="mb-3"><code class="language-cpp">#include &lt;optional&gt;
+
+std::optional&lt;int&gt; find_user_id(std::string name) {
+    if (name == "Alice") return 42;
+    return std::nullopt;
+}
+
+int main() {
+    if (auto id = find_user_id("Alice")) 
+        std::cout << "ID = " << *id << "\n";
+    else 
+        std::cout << "User not found\n";
+}</code></pre>
+
+        <h5>std::variant</h5>
+        <p>
+            Type-safe union — holds one of several types at a time.
+        </p>
+
+        <pre class="mb-3"><code class="language-cpp">#include &lt;variant&gt;
+
+std::variant&lt;int, std::string&gt; data;
+
+data = 10;
+std::cout << std::get&lt;int&gt;(data) << "\n";
+
+data = "hello";
+std::cout << std::get&lt;std::string&gt;(data) << "\n";
+
+// std::get_if returns pointer or nullptr
+if (auto p = std::get_if&lt;int&gt;(&data))
+    std::cout << "int: " << *p << "\n";
+else
+    std::cout << "not an int\n";
+</code></pre>
+
+        <h5>std::any</h5>
+        <p>
+            A type-safe container for a single value of any type.
+        </p>
+
+        <pre class="mb-3"><code class="language-cpp">#include &lt;any&gt;
+
+std::any a = 5;
+std::cout << std::any_cast&lt;int&gt;(a) << "\n";
+
+a = std::string("Hello");
+std::cout << std::any_cast&lt;std::string&gt;(a) << "\n";
+</code></pre>
+
+        <h4 id="filesystem">std::filesystem</h4>
+        <p>
+            The new filesystem library provides portable tools for file and directory manipulation.
+        </p>
+
+        <pre class="mb-3"><code class="language-cpp">#include &lt;filesystem&gt;
+#include &lt;iostream&gt;
+
+namespace fs = std::filesystem;
+
+int main() {
+    fs::create_directory("example");
+    for (auto& p : fs::directory_iterator(".")) {
+        std::cout << p.path() << "\n";
+    }
+}</code></pre>
+
+        <h4 id="fold-expressions">Fold expressions</h4>
+        <p>
+            Simplify variadic templates by allowing concise reduction over parameter packs.
+        </p>
+
+        <pre class="mb-3"><code class="language-cpp">template&lt;typename... Args&gt;
+auto sum(Args... args) {
+    return (args + ...); // expands to (((arg1 + arg2) + arg3) + ...)
+}
+
+int main() {
+    std::cout << sum(1, 2, 3, 4) << "\n"; // 10
+}</code></pre>
+
+        <h4 id="inline-vars">Inline variables</h4>
+        <p>
+            Allow defining variables in headers without violating the one-definition rule.
+        </p>
+
+        <pre class="mb-3"><code class="language-cpp">struct Config {
+    static inline const std::string name = "App";
+    static inline int version = 2;
+};
+</code></pre>
+
+        <h4 id="constexpr17">constexpr improvements</h4>
+        <p>
+            More operations allowed in <code>constexpr</code> functions — including <code>if</code>,
+            <code>switch</code>, and most loops.
+        </p>
+
+        <h4 id="other-cpp17">Other small but useful C++17 features</h4>
+        <ul>
+            <li><b>std::string_view</b> — lightweight, non-owning view into a string.</li>
+            <li><b>[[nodiscard]]</b> — warn if a return value is ignored.</li>
+            <li><b>[[maybe_unused]]</b> — suppress “unused variable” warnings.</li>
+            <li><b>__has_include</b> — check header availability at compile time.</li>
+            <li><b>constexpr lambdas</b> — lambdas can now be <code>constexpr</code>.</li>
+        </ul>
+
+        <pre class="mb-3"><code class="language-cpp">[[nodiscard]] int compute() { return 42; }
+
+int main() {
+    compute(); // compiler may warn: 'nodiscard' result ignored
+}</code></pre>
+
+        <h2 id="cpp20">C++20</h2>
+        <p><i>A major modernizing release — introducing concepts, ranges, coroutines, and modules.</i></p>
+
+        <h4 id="concepts">Concepts</h4>
+        <p>
+            Concepts allow you to constrain template parameters with readable, compile-time checks.
+        </p>
+
+        <pre class="mb-3"><code class="language-cpp">#include &lt;concepts&gt;
+#include &lt;iostream&gt;
+
+template&lt;std::integral T&gt;
+T add(T a, T b) { return a + b; }
+
+int main() {
+    std::cout &lt;&lt; add(3, 4) &lt;&lt; "\n";    // OK
+    // add(3.5, 2.1); // compile error: not integral
+}</code></pre>
+
+        <p>
+            You can also define your own concepts:
+        </p>
+
+        <pre class="mb-3"><code class="language-cpp">template&lt;typename T&gt;
+concept Incrementable = requires(T x) {
+    ++x; x++;
+};
+
+template&lt;Incrementable T&gt;
+void increment(T&amp; value) { ++value; }
+</code></pre>
+
+        <h4 id="ranges">Ranges</h4>
+        <p>
+            The Ranges library introduces a powerful new way to compose algorithms.
+        </p>
+
+        <pre class="mb-3"><code class="language-cpp">#include &lt;ranges&gt;
+#include &lt;vector&gt;
+#include &lt;iostream&gt;
+
+int main() {
+    std::vector&lt;int&gt; v = {1, 2, 3, 4, 5};
+
+    auto even_doubled =
+        v | std::views::filter([](int n){ return n % 2 == 0; })
+          | std::views::transform([](int n){ return n * 2; });
+
+    for (int n : even_doubled)
+        std::cout &lt;&lt; n &lt;&lt; " "; // 4 8
+}</code></pre>
+
+        <p>
+            Ranges make algorithms composable and lazy — they only compute what’s needed.
+        </p>
+
+        <h4 id="coroutines">Coroutines</h4>
+        <p>
+            Coroutines enable writing asynchronous or lazy computations with <code>co_await</code>,
+            <code>co_yield</code>, and <code>co_return</code>.
+        </p>
+
+        <pre class="mb-3"><code class="language-cpp">#include &lt;coroutine&gt;
+#include &lt;iostream&gt;
+
+struct Generator {
+    struct promise_type;
+    using handle_type = std::coroutine_handle&lt;promise_type&gt;;
+    struct promise_type {
+        int current_value;
+        auto get_return_object() { return Generator{handle_type::from_promise(*this)}; }
+        std::suspend_always initial_suspend() { return {}; }
+        std::suspend_always yield_value(int value) { current_value = value; return {}; }
+        std::suspend_always final_suspend() noexcept { return {}; }
+        void return_void() {}
+        void unhandled_exception() { std::exit(1); }
+    };
+    handle_type h;
+    Generator(handle_type h) : h(h) {}
+    ~Generator() { h.destroy(); }
+    bool next() { h.resume(); return !h.done(); }
+    int value() const { return h.promise().current_value; }
+};
+
+Generator counter(int n) {
+    for (int i = 0; i &lt; n; ++i)
+        co_yield i;
+}
+
+int main() {
+    auto g = counter(3);
+    while (g.next())
+        std::cout &lt;&lt; g.value() &lt;&lt; "\n"; // 0 1 2
+}</code></pre>
+
+        <h4 id="modules">Modules</h4>
+        <p>
+            Modules are a new way to organize code — faster to compile and easier to maintain than headers.
+        </p>
+
+        <pre class="mb-3"><code class="language-cpp">// math.ixx
+export module math;
+export int add(int a, int b) { return a + b; }
+
+// main.cpp
+import math;
+#include &lt;iostream&gt;
+int main() {
+    std::cout &lt;&lt; add(2, 3) &lt;&lt; "\n";
+}</code></pre>
+
+        <h4 id="constexpr20">constexpr improvements</h4>
+        <p>
+            C++20 allows dynamic memory, virtual calls, and most STL containers in <code>constexpr</code> code.
+        </p>
+
+        <pre class="mb-3"><code class="language-cpp">constexpr int factorial(int n) {
+    if (n &lt;= 1) return 1;
+    else return n * factorial(n - 1);
+}
+static_assert(factorial(5) == 120);
+</code></pre>
+
+        <h4 id="spaceship">The &lt;=&gt; (spaceship) operator</h4>
+        <p>
+            Defines all comparison operators in one go.
+        </p>
+
+        <pre class="mb-3"><code class="language-cpp">#include &lt;compare&gt;
+
+struct Point {
+    int x, y;
+    auto operator&lt;=&gt;(const Point&amp;) const = default; // generates ==, &lt;, &gt;, etc.
+};
+</code></pre>
+
+        <h4 id="calendar">Calendar & timezones</h4>
+        <p>
+            The <code>&lt;chrono&gt;</code> library now includes calendars, time zones, and parsing/formatting.
+        </p>
+
+        <pre class="mb-3"><code class="language-cpp">#include &lt;chrono&gt;
+#include &lt;iostream&gt;
+
+int main() {
+    using namespace std::chrono;
+    auto today = floor&lt;days&gt;(system_clock::now());
+    std::cout &lt;&lt; "Days since epoch: " &lt;&lt; today.time_since_epoch().count() &lt;&lt; "\n";
+}</code></pre>
+
+        <h4 id="other-cpp20">Other notable C++20 features</h4>
+        <ul>
+            <li><b>Designated initializers</b> — <code>Point p{.x = 1, .y = 2};</code></li>
+            <li><b>consteval</b> — forces compile-time evaluation.</li>
+            <li><b>std::span</b> — lightweight view of a contiguous sequence.</li>
+            <li><b>Three-way comparison</b> via <code>&lt;=&gt;</code>.</li>
+            <li><b>std::format</b> — type-safe string formatting like Python’s <code>format()</code>.</li>
+        </ul>
+
+        <pre class="mb-3"><code class="language-cpp">#include &lt;format&gt;
+std::string msg = std::format("Hello, {}!", "world");
+std::cout &lt;&lt; msg; // Hello, world!
+</code></pre>
+
+        <h2 id="cpp23">C++23</h2>
+        <p><i>A refinement release — polishing C++20 and adding practical modern features.</i></p>
+
+        <h4 id="expected">std::expected</h4>
+        <p>
+            <code>std::expected</code> represents a value or an error without throwing exceptions.
+        </p>
+
+        <pre class="mb-3"><code class="language-cpp">#include &lt;expected&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+std::expected&lt;int, std::string&gt; parse_number(const std::string&amp; s) {
+    try {
+        return std::stoi(s);
+    } catch (...) {
+        return std::unexpected("Invalid number");
+    }
+}
+
+int main() {
+    auto result = parse_number("42");
+    if (result)
+        std::cout &lt;&lt; "Parsed: " &lt;&lt; *result &lt;&lt; "\n";
+    else
+        std::cerr &lt;&lt; "Error: " &lt;&lt; result.error() &lt;&lt; "\n";
+}</code></pre>
+
+        <h4 id="print">std::print</h4>
+        <p>
+            A simpler, faster replacement for <code>std::cout</code>, inspired by Python’s <code>print()</code>.
+        </p>
+
+        <pre class="mb-3"><code class="language-cpp">#include &lt;print&gt;
+
+int main() {
+    std::print("Hello, {}!\n", "world");
+    std::println("Pi ≈ {:.3f}", 3.14159);
+}</code></pre>
+
+        <h4 id="deducing-this">Deducing <code>this</code></h4>
+        <p>
+            Member functions can now declare <code>this</code> as a parameter, improving generic and fluent APIs.
+        </p>
+
+        <pre class="mb-3"><code class="language-cpp">struct Point {
+    int x, y;
+
+    auto&amp; move(this auto&amp; self, int dx, int dy) {
+        self.x += dx;
+        self.y += dy;
+        return self; // allows chaining
+    }
+};
+
+int main() {
+    Point p{1, 2};
+    p.move(2, 3).move(1, 1);
+    std::println("({}, {})", p.x, p.y); // (4, 6)
+}</code></pre>
+
+        <h4 id="range-updates">Ranges updates</h4>
+        <p>
+            C++23 extends the Ranges library with new views and algorithms.
+        </p>
+
+        <ul>
+            <li><code>std::views::zip</code> — combine multiple ranges.</li>
+            <li><code>std::views::repeat</code> — infinite repetition of values.</li>
+            <li><code>std::views::chunk</code> — group elements into subranges.</li>
+            <li><code>std::ranges::fold_left</code> and <code>fold_right</code> — powerful accumulators.</li>
+        </ul>
+
+        <pre class="mb-3"><code class="language-cpp">#include &lt;ranges&gt;
+#include &lt;vector&gt;
+#include &lt;iostream&gt;
+
+int main() {
+    std::vector&lt;int&gt; a = {1, 2, 3};
+    std::vector&lt;char&gt; b = {'A', 'B', 'C'};
+
+    for (auto [num, letter] : std::views::zip(a, b))
+        std::cout &lt;&lt; num &lt;&lt; " - " &lt;&lt; letter &lt;&lt; "\n";
+}</code></pre>
+
+        <h4 id="constexpr23">constexpr and language refinements</h4>
+        <p>
+            More standard library features are now <code>constexpr</code>, including <code>std::string</code>,
+            <code>std::vector</code>, and algorithms.
+        </p>
+
+        <pre class="mb-3"><code class="language-cpp">constexpr bool all_even() {
+    std::vector v = {2, 4, 6};
+    return std::ranges::all_of(v, [](int n){ return n % 2 == 0; });
+}
+static_assert(all_even());
+</code></pre>
+
+        <h4 id="mdspan">std::mdspan</h4>
+        <p>
+            A lightweight, multidimensional view for numerical computing.
+        </p>
+
+        <pre class="mb-3"><code class="language-cpp">#include &lt;mdspan&gt;
+#include &lt;iostream&gt;
+
+int main() {
+    double data[6] = {1, 2, 3, 4, 5, 6};
+    std::mdspan m(data, 2, 3); // 2 rows, 3 columns
+    std::cout &lt;&lt; m(1, 2) &lt;&lt; "\n"; // 6
+}</code></pre>
+
+        <h4 id="multirange">Multirange for-loops</h4>
+        <p>
+            You can now iterate multiple ranges in parallel directly in a range-based <code>for</code> loop.
+        </p>
+
+        <pre class="mb-3"><code class="language-cpp">std::vector&lt;int&gt; a = {1, 2, 3};
+std::vector&lt;char&gt; b = {'x', 'y', 'z'};
+
+for (auto [num, letter] : std::views::zip(a, b))
+    std::print("{}{}\n", num, letter);
+</code></pre>
+
+        <h4 id="other-cpp23">Other notable C++23 additions</h4>
+        <ul>
+            <li><b>std::flat_set</b> / <b>std::flat_map</b> — sorted associative containers with vector-like storage.
+            </li>
+            <li><b>std::move_only_function</b> — function wrapper for move-only callables.</li>
+            <li><b>std::generator</b> — coroutine-based lazy generators.</li>
+            <li><b>std::stacktrace</b> — programmatic access to call stacks.</li>
+            <li><b>std::byteswap</b> — endian utilities.</li>
+        </ul>
     </div>
 
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
