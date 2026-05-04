@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Aurélien Montmejat</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link id="hljs-theme" rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/vs2015.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
+
+    <style>
+        div.content-center {
+            height: 150px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        div.container {
+            max-width: 1000px;
+        }
+
+        nav,
+        .navbar {
+            position: absolute;
+            top: 0;
+        }
+
+        body,
+        html {
+            font-family: 'Fira Code', monospace;
+            height: 100%;
+            margin: 0;
+        }
+
+        h3,
+        h4 {
+            margin-top: 2rem;
+        }
+
+        [data-bs-theme="light"] .theme-dark {
+            display: none;
+        }
+
+        [data-bs-theme="dark"] .theme-light {
+            display: none;
+        }
+
+        .interactive-demo {
+            background: var(--bs-body-bg);
+            border-color: var(--bs-border-color);
+        }
+
+        .interactive-demo .form-range {
+            accent-color: var(--bs-primary);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="content-center">
+        <nav class="navbar navbar-expand-lg m-4">
+            <div class="container-fluid">
+                <div class="navbar-collapse justify-content-md-center">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="../index.html">home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="../tree.html">tech-tree</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">resume</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">contact</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <div class="container" style="margin-bottom: 400px;">
+        <h1>Self-Attention</h1>
+
+        <p>
+            Self-attention is the core mechanism behind transformers. In this post I try to build some intuition
+            for how it actually works.
+        </p>
+
+        <p>
+            The idea is fairly simple: for every pair of tokens we compute an attention score, and we use those
+            scores to take a weighted average of the tokens.
+        </p>
+
+        <div class="text-center m-3">
+            <img src="self-attention/self-attention-architecture-light.excalidraw.png" class="theme-light"
+                style="width: 500px;" alt="Overview of the self-attention architecture">
+            <img src="self-attention/self-attention-architecture-dark.excalidraw.png" class="theme-dark"
+                style="width: 500px;" alt="Overview of the self-attention architecture">
+        </div>
+
+        <p>
+            The trick is that we project the input through three learned weight matrices
+            &mdash; $Q$ (queries), $K$ (keys), and $V$ (values) &mdash; and through these learned projections, we
+            compute the attention scores and apply them to the values.
+        </p>
+
+        <div class="text-center m-3">
+            <img src="self-attention/self-attention-architecture-detailed-light.excalidraw.png"
+                class="img-fluid theme-light" alt="Detailed view of the self-attention architecture">
+            <img src="self-attention/self-attention-architecture-detailed-dark.excalidraw.png"
+                class="img-fluid theme-dark" alt="Detailed view of the self-attention architecture">
+        </div>
+
+        <p>
+            This is captured in the following formula (the softmax and division by $\sqrt{d_k}$ is for normalization and
+            numerical stability):
+        </p>
+
+        $$ \text{Attention}(Q, K, V) = \text{softmax}\!\left(\frac{QK^T}{\sqrt{d_k}}\right) V $$
+
+        <p>
+            Let's imagine a noisy input signal.
+        </p>
+
+        <p>
+            It would be very cool to generate an output signal containing a new signal with contextual
+            information, like a smoothed version of the input signal! We could hand-craft $W_Q$, $W_K$ and $W_V$ so
+            that: the attention scores are high for tokens that are close to each other, and that the retrieved values
+            are the average of the neighbors.
+        </p>
+
+        <p>
+            For a 1D input signal, $W_Q$ and $W_K$ can only be 1x1 matrices, so it's not possible to build anything very
+            interesting for our case. However, if we augment the input dimensions, we can start having a lot more fun!
+        </p>
+
+        <p>
+            We can engineer $Q$ and $K$ so that their dot product computes
+            $-(p_i - p_j)^2$. After softmax, this gives a proper Gaussian centered on the diagonal.
+        </p>
+
+        <p>
+            Having a look back at our high school math formulas:
+        </p>
+
+        $$ -(p_i - p_j)^2 = -p_i^2 + 2\,p_i\,p_j - p_j^2, $$
+
+        <p>
+            each term only depends on $p_i$ <em>or</em> $p_j$, not both. A dot product $Q_i \cdot K_j$ is a sum of
+            products that each pair one coordinate from $i$ with one from $j$, so any term that depends only on $p_i$
+            has to ride on a constant coming from the $j$ side (and vice versa). If we stuff quadratic position features
+            into the input and route each term to its own dimension via $W_Q$ and $W_K$, the dot product reconstructs
+            $-(p_i - p_j)^2$ for free:
+        </p>
+
+        <pre class="m-2"><code class="language-python">X_4d = np.column_stack([noisy_signal, positions, positions**2, np.ones(n)])
+
+W_Q = np.array([       # Q_i = [sqrt(2)*pos_i, -pos_i^2, 1]
+    [0, 0, 0],
+    [np.sqrt(2), 0, 0],
+    [0, -1, 0],
+    [0, 0, 1],
+])
+W_K = np.array([       # K_j = [sqrt(2)*pos_j, 1, -pos_j^2]
+    [0, 0, 0],
+    [np.sqrt(2), 0, 0],
+    [0, 0, -1],
+    [0, 1, 0],
+])
+W_V = np.array([[1], [0], [0], [0]])  # V_j = noisy_signal[j]
+
+scores = (X_4d @ W_Q) @ (X_4d @ W_K).T  # = -(pos_i - pos_j)^2
+weights = softmax(scores / temperature)
+output  = weights @ (X_4d @ W_V)</code></pre>
+
+        <p>
+            Here's that engineered attention head running live in your browser. The dashed line is the ground-truth
+            sine, the dots are the noisy observations, and the solid line is what attention outputs. The square on
+            the right is the attention matrix &mdash; row $i$ shows how much token $i$ attends to every other token.
+        </p>
+
+        <div class="interactive-demo card p-3 m-3">
+            <div class="row g-3 align-items-center">
+                <div class="col-lg-7">
+                    <canvas id="sa-signal" style="width: 100%; height: 260px; display: block;"></canvas>
+                </div>
+                <div class="col-lg-5">
+                    <canvas id="sa-heatmap" style="width: 100%; height: 260px; display: block;"></canvas>
+                </div>
+            </div>
+            <div class="row g-3 mt-3">
+                <div class="col-md-4">
+                    <label for="sa-noise" class="form-label small mb-1">noise σ: <span
+                            id="sa-noise-val">0.30</span></label>
+                    <input type="range" class="form-range" id="sa-noise" min="0" max="1" step="0.01" value="0.3">
+                </div>
+                <div class="col-md-4">
+                    <label for="sa-temp" class="form-label small mb-1">temperature τ: <span
+                            id="sa-temp-val">1.00</span></label>
+                    <input type="range" class="form-range" id="sa-temp" min="0.05" max="20" step="0.05" value="1.0">
+                </div>
+                <div class="col-md-4">
+                    <label for="sa-n" class="form-label small mb-1">tokens N: <span id="sa-n-val">60</span></label>
+                    <input type="range" class="form-range" id="sa-n" min="20" max="150" step="1" value="60">
+                </div>
+            </div>
+        </div>
+
+        <p>
+            A few things to play with: turn $\sigma$ up and the noisy dots scatter wildly &mdash; yet a moderate
+            temperature still recovers a clean sine. Push $\tau$ toward $0$ and the attention matrix collapses to
+            the identity (each token only sees itself, so no smoothing happens); push it up and the matrix turns
+            uniform (each token averages everything, flattening the signal toward $0$). Increasing $N$ gives more
+            samples per period, sharpening the result.
+        </p>
+    </div>
+
+    <script src="../javascript/color-modes.js"></script>
+    <script>
+        (function () {
+            const themes = {
+                light: 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/vs.min.css',
+                dark: 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/vs2015.min.css',
+            };
+            function apply() {
+                const link = document.getElementById('hljs-theme');
+                if (!link) return;
+                const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+                const next = themes[isDark ? 'dark' : 'light'];
+                if (link.getAttribute('href') !== next) link.setAttribute('href', next);
+            }
+            apply();
+            new MutationObserver(apply).observe(document.documentElement, {
+                attributes: true,
+                attributeFilter: ['data-bs-theme'],
+            });
+        })();
+    </script>
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+    <script>hljs.highlightAll();</script>
+
+    <script>
+        (function () {
+            function rng(seed) {
+                let s = seed | 0;
+                return function () {
+                    s = (s + 0x6D2B79F5) | 0;
+                    let t = s;
+                    t = Math.imul(t ^ (t >>> 15), t | 1);
+                    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+                    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+                };
+            }
+
+            function normalGen(rand) {
+                return function () {
+                    let u = 0, v = 0;
+                    while (u === 0) u = rand();
+                    while (v === 0) v = rand();
+                    return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+                };
+            }
+
+            function compute(n, sigma, temperature) {
+                const positions = new Float32Array(n);
+                const clean = new Float32Array(n);
+                const noisy = new Float32Array(n);
+                const noise = normalGen(rng(42));
+                for (let i = 0; i < n; i++) {
+                    const t = -Math.PI + (2 * Math.PI * i) / (n - 1);
+                    positions[i] = t;
+                    clean[i] = Math.sin(t);
+                    noisy[i] = clean[i] + sigma * noise();
+                }
+                const weights = new Float32Array(n * n);
+                const output = new Float32Array(n);
+                for (let i = 0; i < n; i++) {
+                    let max = -Infinity;
+                    const row = new Float32Array(n);
+                    for (let j = 0; j < n; j++) {
+                        const d = positions[i] - positions[j];
+                        const s = -d * d / temperature;
+                        row[j] = s;
+                        if (s > max) max = s;
+                    }
+                    let sum = 0;
+                    for (let j = 0; j < n; j++) {
+                        row[j] = Math.exp(row[j] - max);
+                        sum += row[j];
+                    }
+                    let acc = 0;
+                    for (let j = 0; j < n; j++) {
+                        const w = row[j] / sum;
+                        weights[i * n + j] = w;
+                        acc += w * noisy[j];
+                    }
+                    output[i] = acc;
+                }
+                return { positions, clean, noisy, output, weights };
+            }
+
+            function getColors() {
+                const dark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+                if (dark) {
+                    return {
+                        axis: '#888',
+                        text: '#bbb',
+                        clean: '#888',
+                        noisy: 'rgba(200,200,200,0.55)',
+                        denoised: '#5cd1ff',
+                        grid: 'rgba(255,255,255,0.07)',
+                    };
+                }
+                return {
+                    axis: '#666',
+                    text: '#444',
+                    clean: '#888',
+                    noisy: 'rgba(60,60,60,0.45)',
+                    denoised: '#0d6efd',
+                    grid: 'rgba(0,0,0,0.07)',
+                };
+            }
+
+            function setupCanvas(canvas) {
+                const dpr = window.devicePixelRatio || 1;
+                const rect = canvas.getBoundingClientRect();
+                canvas.width = Math.max(1, Math.round(rect.width * dpr));
+                canvas.height = Math.max(1, Math.round(rect.height * dpr));
+                const ctx = canvas.getContext('2d');
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                return { ctx, w: rect.width, h: rect.height };
+            }
+
+            function drawSignal(canvas, data) {
+                const { ctx, w, h } = setupCanvas(canvas);
+                const c = getColors();
+                ctx.clearRect(0, 0, w, h);
+
+                const padL = 28, padR = 12, padT = 28, padB = 22;
+                const plotW = w - padL - padR;
+                const plotH = h - padT - padB;
+                const xMin = -Math.PI, xMax = Math.PI;
+                const yMin = -1.8, yMax = 1.8;
+                const xToPx = x => padL + ((x - xMin) / (xMax - xMin)) * plotW;
+                const yToPx = y => padT + (1 - (y - yMin) / (yMax - yMin)) * plotH;
+
+                ctx.strokeStyle = c.grid;
+                ctx.lineWidth = 1;
+                for (let yv = -1; yv <= 1; yv += 0.5) {
+                    ctx.beginPath();
+                    ctx.moveTo(padL, yToPx(yv));
+                    ctx.lineTo(padL + plotW, yToPx(yv));
+                    ctx.stroke();
+                }
+                ctx.strokeStyle = c.axis;
+                ctx.beginPath();
+                ctx.moveTo(padL, yToPx(0));
+                ctx.lineTo(padL + plotW, yToPx(0));
+                ctx.stroke();
+
+                ctx.fillStyle = c.noisy;
+                for (let i = 0; i < data.positions.length; i++) {
+                    ctx.beginPath();
+                    ctx.arc(xToPx(data.positions[i]), yToPx(data.noisy[i]), 2, 0, 2 * Math.PI);
+                    ctx.fill();
+                }
+
+                ctx.setLineDash([4, 4]);
+                ctx.strokeStyle = c.clean;
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                for (let i = 0; i < data.positions.length; i++) {
+                    const x = xToPx(data.positions[i]);
+                    const y = yToPx(data.clean[i]);
+                    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                ctx.strokeStyle = c.denoised;
+                ctx.lineWidth = 2.5;
+                ctx.beginPath();
+                for (let i = 0; i < data.positions.length; i++) {
+                    const x = xToPx(data.positions[i]);
+                    const y = yToPx(data.output[i]);
+                    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+
+                ctx.font = '11px "Fira Code", monospace';
+                ctx.fillStyle = c.text;
+                const items = [
+                    { kind: 'dot', color: c.noisy, label: 'noisy' },
+                    { kind: 'dash', color: c.clean, label: 'clean' },
+                    { kind: 'line', color: c.denoised, label: 'attention output' },
+                ];
+                let lx = padL;
+                const ly = 14;
+                items.forEach(it => {
+                    if (it.kind === 'dot') {
+                        ctx.fillStyle = it.color;
+                        ctx.beginPath();
+                        ctx.arc(lx + 6, ly, 2.5, 0, 2 * Math.PI);
+                        ctx.fill();
+                    } else {
+                        ctx.strokeStyle = it.color;
+                        ctx.lineWidth = 2;
+                        if (it.kind === 'dash') ctx.setLineDash([3, 3]);
+                        ctx.beginPath();
+                        ctx.moveTo(lx, ly);
+                        ctx.lineTo(lx + 14, ly);
+                        ctx.stroke();
+                        ctx.setLineDash([]);
+                    }
+                    ctx.fillStyle = c.text;
+                    ctx.fillText(it.label, lx + 18, ly + 4);
+                    lx += 18 + ctx.measureText(it.label).width + 16;
+                });
+            }
+
+            function colormap(t) {
+                const stops = [
+                    [68, 1, 84],
+                    [59, 82, 139],
+                    [33, 145, 140],
+                    [94, 201, 98],
+                    [253, 231, 37],
+                ];
+                const x = Math.max(0, Math.min(1, t)) * (stops.length - 1);
+                const i = Math.floor(x);
+                const f = x - i;
+                const a = stops[i];
+                const b = stops[Math.min(i + 1, stops.length - 1)];
+                const r = Math.round(a[0] + (b[0] - a[0]) * f);
+                const g = Math.round(a[1] + (b[1] - a[1]) * f);
+                const bl = Math.round(a[2] + (b[2] - a[2]) * f);
+                return `rgb(${r},${g},${bl})`;
+            }
+
+            function drawHeatmap(canvas, data) {
+                const { ctx, w, h } = setupCanvas(canvas);
+                const c = getColors();
+                ctx.clearRect(0, 0, w, h);
+
+                const n = data.positions.length;
+                const padTop = 22, padBottom = 8;
+                const size = Math.min(w, h - padTop - padBottom);
+                const offX = (w - size) / 2;
+                const offY = padTop;
+
+                let max = 0;
+                for (let k = 0; k < n * n; k++) if (data.weights[k] > max) max = data.weights[k];
+
+                const cell = size / n;
+                for (let i = 0; i < n; i++) {
+                    for (let j = 0; j < n; j++) {
+                        const t = data.weights[i * n + j] / (max || 1);
+                        ctx.fillStyle = colormap(t);
+                        ctx.fillRect(
+                            offX + j * cell,
+                            offY + i * cell,
+                            Math.ceil(cell) + 0.5,
+                            Math.ceil(cell) + 0.5
+                        );
+                    }
+                }
+
+                ctx.strokeStyle = c.axis;
+                ctx.lineWidth = 1;
+                ctx.strokeRect(offX + 0.5, offY + 0.5, size, size);
+
+                ctx.fillStyle = c.text;
+                ctx.font = '11px "Fira Code", monospace';
+                ctx.fillText('attention weights (row i = what token i attends to)', offX, offY - 8);
+            }
+
+            function init() {
+                const canvasSignal = document.getElementById('sa-signal');
+                const canvasHeat = document.getElementById('sa-heatmap');
+                if (!canvasSignal || !canvasHeat) return;
+
+                const noiseEl = document.getElementById('sa-noise');
+                const tempEl = document.getElementById('sa-temp');
+                const nEl = document.getElementById('sa-n');
+                const noiseVal = document.getElementById('sa-noise-val');
+                const tempVal = document.getElementById('sa-temp-val');
+                const nVal = document.getElementById('sa-n-val');
+
+                function update() {
+                    const sigma = +noiseEl.value;
+                    const temp = +tempEl.value;
+                    const n = +nEl.value;
+                    noiseVal.textContent = sigma.toFixed(2);
+                    tempVal.textContent = temp.toFixed(2);
+                    nVal.textContent = n;
+                    const data = compute(n, sigma, temp);
+                    drawSignal(canvasSignal, data);
+                    drawHeatmap(canvasHeat, data);
+                }
+
+                noiseEl.addEventListener('input', update);
+                tempEl.addEventListener('input', update);
+                nEl.addEventListener('input', update);
+
+                let resizeRaf = 0;
+                window.addEventListener('resize', () => {
+                    cancelAnimationFrame(resizeRaf);
+                    resizeRaf = requestAnimationFrame(update);
+                });
+
+                new MutationObserver(update).observe(document.documentElement, {
+                    attributes: true,
+                    attributeFilter: ['data-bs-theme'],
+                });
+
+                update();
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+        })();
+    </script>
+</body>
+
+</html>
