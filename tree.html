@@ -14,11 +14,10 @@
 
     <style>
         div.content-center {
-            height: 75%;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
+            padding: 7rem 1rem 3rem;
         }
 
         nav,
@@ -36,6 +35,18 @@
 
         .tf-nc.card {
             border: var(--bs-card-border-width) solid var(--bs-card-border-color);
+        }
+
+        .tf-tree {
+            padding-top: 2px;
+        }
+
+        /* treeflex lays siblings out side by side, so a wide branch can exceed
+           the viewport; let it scroll rather than clip. */
+        .tree-scroll {
+            width: 100%;
+            overflow-x: auto;
+            padding-bottom: 1rem;
         }
 
         .tf-tree li {
@@ -79,6 +90,9 @@
                             <a class="nav-link active" href="tree.html">tech-tree</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link" href="companies.html">companies</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" href="resume.html">resume</a>
                         </li>
                         <li class="nav-item">
@@ -89,85 +103,200 @@
             </div>
         </nav>
 
-        <p class="mt-5 text-secondary" style="width: 22rem; text-align: center;">I summerize what I'm working on here.
-            More to come
-            soon.</p>
-
-        <div class="tf-tree content-center">
+        <div class="tree-scroll">
+        <div class="tf-tree">
             <ul>
+                <!-- Software section: groups the categories below -->
                 <li>
-                    <span class="tf-nc card">Image processing</span>
+                    <span class="tf-nc card">Software</span>
                     <ul>
                         <li>
-                            <span class="tf-nc card" style="width: 18rem;">
-                                <div class="card-body">
-                                    <h5 class="card-title">MOSSE</h5>
-                                    <p class="card-text">Object tracking</p>
-                                    <hr class="m-2">
-                                    <i class="bi bi-github"></i>
-                                    <a href="https://github.com/montmejat/mosse" class="card-link">Code</a>
-                                    <i class="bi bi-info-circle-fill"></i>
-                                    <a href="pages/mosse.html" class="card-link">Notes</a>
-                                </div>
-                            </span>
-                        </li>
-                    </ul>
-                </li>
-
-                <li>
-                    <span class="tf-nc card">Deep Learning</span>
-                    <ul>
-                        <li>
-                            <span class="tf-nc card">Transformers</span>
+                            <span class="tf-nc card">Image processing</span>
                             <ul>
                                 <li>
                                     <span class="tf-nc card" style="width: 18rem;">
                                         <div class="card-body">
-                                            <h5 class="card-title">Self-Attention</h5>
-                                            <p class="card-text">Building the intuition</p>
+                                            <h5 class="card-title">MOSSE</h5>
+                                            <p class="card-text">Object tracking</p>
                                             <hr class="m-2">
+                                            <i class="bi bi-github"></i>
+                                            <a href="https://github.com/montmejat/mosse" class="card-link">Code</a>
                                             <i class="bi bi-info-circle-fill"></i>
-                                            <a href="pages/self-attention.html" class="card-link">Notes</a>
+                                            <a href="pages/mosse.html" class="card-link">Notes</a>
                                         </div>
                                     </span>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            <span class="tf-nc card">Deep Learning</span>
+                            <ul>
+                                <li>
+                                    <span class="tf-nc card">Transformers</span>
                                     <ul>
                                         <li>
                                             <span class="tf-nc card" style="width: 18rem;">
                                                 <div class="card-body">
-                                                    <h5 class="card-title">Nano GPT</h5>
-                                                    <p class="card-text">Professional yapper</p>
+                                                    <h5 class="card-title">Self-Attention</h5>
+                                                    <p class="card-text">Building the intuition</p>
                                                     <hr class="m-2">
-                                                    <i class="bi bi-github"></i>
-                                                    <a href="https://github.com/montmejat/nano-gpt" class="card-link">Code</a>
                                                     <i class="bi bi-info-circle-fill"></i>
-                                                    <a href="pages/nano-gpt.html" class="card-link">Notes</a>
+                                                    <a href="pages/self-attention.html" class="card-link">Notes</a>
                                                 </div>
                                             </span>
+                                            <ul>
+                                                <li>
+                                                    <span class="tf-nc card" style="width: 18rem;">
+                                                        <div class="card-body">
+                                                            <h5 class="card-title">Nano GPT</h5>
+                                                            <p class="card-text">Professional yapper</p>
+                                                            <hr class="m-2">
+                                                            <i class="bi bi-github"></i>
+                                                            <a href="https://github.com/montmejat/nano-gpt" class="card-link">Code</a>
+                                                            <i class="bi bi-info-circle-fill"></i>
+                                                            <a href="pages/nano-gpt.html" class="card-link">Notes</a>
+                                                        </div>
+                                                    </span>
+                                                </li>
+                                            </ul>
                                         </li>
                                     </ul>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            <span class="tf-nc card">Programming languages</span>
+                            <ul>
+                                <li>
+                                    <span class="tf-nc card" style="width: 18rem;">
+                                        <div class="card-body">
+                                            <h5 class="card-title">C++</h5>
+                                            <p class="card-text">A little bit of history</p>
+                                            <hr class="m-2">
+                                            <i class="bi bi-info-circle-fill"></i>
+                                            <a href="pages/cpp.html" class="card-link">Notes</a>
+                                        </div>
+                                    </span>
                                 </li>
                             </ul>
                         </li>
                     </ul>
                 </li>
 
+                <!-- Robotics section: the control stack, each layer building on the one above -->
                 <li>
-                    <span class="tf-nc card">Programming languages</span>
+                    <span class="tf-nc card">Robotics</span>
+                    <ul>
+                        <li>
+                                    <span class="tf-nc card" style="width: 18rem;">
+                                        <div class="card-body">
+                                            <h5 class="card-title">EtherCAT</h5>
+                                            <p class="card-text">Fieldbus, PDOs and the state machine</p>
+                                            <hr class="m-2">
+                                            <i class="bi bi-info-circle-fill"></i>
+                                            <a href="pages/ethercat.html" class="card-link">Notes</a>
+                                        </div>
+                                    </span>
+                                    <ul>
+                                <li>
+                                    <span class="tf-nc card" style="width: 18rem;">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Real-Time Linux</h5>
+                                            <p class="card-text">Making a loop land on time</p>
+                                            <hr class="m-2">
+                                            <i class="bi bi-info-circle-fill"></i>
+                                            <a href="pages/real-time-linux.html" class="card-link">Notes</a>
+                                        </div>
+                                    </span>
+                                    <ul>
+                                <li>
+                                    <span class="tf-nc card" style="width: 18rem;">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Lock-Free Queues</h5>
+                                            <p class="card-text">Sharing without waiting</p>
+                                            <hr class="m-2">
+                                            <i class="bi bi-info-circle-fill"></i>
+                                            <a href="pages/lock-free-queues.html" class="card-link">Notes</a>
+                                        </div>
+                                    </span>
+                                    <ul>
+                                <li>
+                                    <span class="tf-nc card" style="width: 18rem;">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Zero-Copy IPC</h5>
+                                            <p class="card-text">Shared memory vs. DDS vs. ROS 2</p>
+                                        </div>
+                                    </span>
+                                    <ul>
+                                <li>
+                                    <span class="tf-nc card" style="width: 18rem;">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Clock Synchronisation</h5>
+                                            <p class="card-text">Distributed clocks and PTP</p>
+                                        </div>
+                                    </span>
+                                    <ul>
+                                <li>
+                                    <span class="tf-nc card" style="width: 18rem;">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Transmissions</h5>
+                                            <p class="card-text">Actuator space is not joint space</p>
+                                        </div>
+                                    </span>
+                                    <ul>
+                                <li>
+                                    <span class="tf-nc card" style="width: 18rem;">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Rate Bridging</h5>
+                                            <p class="card-text">A 50 Hz policy on a 1 kHz loop</p>
+                                        </div>
+                                    </span>
+                                    <ul>
+                                <li>
+                                    <span class="tf-nc card" style="width: 18rem;">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Safety Layers</h5>
+                                            <p class="card-text">Limits, interlocks and certification</p>
+                                        </div>
+                                    </span>
+                                </li>
+                                    </ul>
+                                </li>
+                                    </ul>
+                                </li>
+                                    </ul>
+                                </li>
+                                    </ul>
+                                </li>
+                                    </ul>
+                                </li>
+                                    </ul>
+                                </li>
+                                    </ul>
+                                </li>
+                    </ul>
+                </li>
+
+                <li>
+                    <span class="tf-nc card">Electronics</span>
                     <ul>
                         <li>
                             <span class="tf-nc card" style="width: 18rem;">
                                 <div class="card-body">
-                                    <h5 class="card-title">C++</h5>
-                                    <p class="card-text">A little bit of history</p>
+                                    <h5 class="card-title">Design Rules</h5>
+                                    <p class="card-text">Design rules 101</p>
                                     <hr class="m-2">
                                     <i class="bi bi-info-circle-fill"></i>
-                                    <a href="pages/cpp.html" class="card-link">Notes</a>
+                                    <a href="pages/design-rules.html" class="card-link">Notes</a>
                                 </div>
                             </span>
                         </li>
                     </ul>
                 </li>
             </ul>
+        </div>
         </div>
     </div>
 
